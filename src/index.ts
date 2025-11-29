@@ -48,7 +48,7 @@ export class SafeCommsClient {
 
   constructor(config: SafeCommsConfig) {
     this.client = axios.create({
-      baseURL: config.baseUrl || 'https://safecomms.dev/api/v1/public',
+      baseURL: config.baseUrl || 'https://api.safecomms.dev',
       headers: {
         'Authorization': `Bearer ${config.apiKey}`,
         'Content-Type': 'application/json',
