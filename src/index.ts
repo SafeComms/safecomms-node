@@ -1,4 +1,6 @@
 import axios, { AxiosInstance } from 'axios';
+import * as fs from 'fs';
+import * as path from 'path';
 
 export interface SafeCommsConfig {
   apiKey: string;
@@ -11,6 +13,12 @@ export interface TextModerationRequest {
   replace?: boolean;
   pii?: boolean;
   replaceSeverity?: string;
+  moderationProfileId?: string;
+}
+
+export interface ImageModerationRequest {
+  image: string;
+  language?: string;
   moderationProfileId?: string;
 }
 
@@ -77,6 +85,40 @@ export class SafeCommsClient {
         ...request,
       });
       return response.data;
+    } catch (error) {
+      this.handleError(error);
+    }
+  }
+
+  async moderateImage(request: ImageModerationRequest): Promise<any> {
+    try {
+      const response = await this.client.post('/moderation/image', {
+        language: 'en',
+        ...request,
+      });
+      return response.data;
+    } catch (error) {
+      this.handleError(error);
+    }
+  }
+
+  async moderateImageFile(filePath: string, language: string = 'en', moderationProfileId?: string): Promise<any> {
+    try {
+      const fileBuffer = fs.readFileSync(filePath);
+      const base64Image = fileBuffer.toString('base64');
+      const ext = path.extname(filePath).toLowerCase().replace('.', '');
+      let mime = 'image/jpeg';
+      if (ext === 'png') mime = 'image/png';
+      else if (ext === 'webp') mime = 'image/webp';
+      else if (ext === 'gif') mime = 'image/gif';
+      
+      const dataUri = `data:${mime};base64,${base64Image}`;
+      
+      return await this.moderateImage({
+        image: dataUri,
+        language,
+        moderationProfileId
+      });
     } catch (error) {
       this.handleError(error);
     }
