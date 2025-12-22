@@ -20,6 +20,9 @@ export interface ImageModerationRequest {
   image: string;
   language?: string;
   moderationProfileId?: string;
+  enableOcr?: boolean;
+  enhancedOcr?: boolean;
+  extractMetadata?: boolean;
 }
 
 export interface UsageResponse {
@@ -102,7 +105,7 @@ export class SafeCommsClient {
     }
   }
 
-  async moderateImageFile(filePath: string, language: string = 'en', moderationProfileId?: string): Promise<any> {
+  async moderateImageFile(filePath: string, language: string = 'en', moderationProfileId?: string, enableOcr?: boolean, enhancedOcr?: boolean, extractMetadata?: boolean): Promise<any> {
     try {
       const fileBuffer = fs.readFileSync(filePath);
       const base64Image = fileBuffer.toString('base64');
@@ -117,7 +120,10 @@ export class SafeCommsClient {
       return await this.moderateImage({
         image: dataUri,
         language,
-        moderationProfileId
+        moderationProfileId,
+        enableOcr,
+        enhancedOcr,
+        extractMetadata
       });
     } catch (error) {
       this.handleError(error);
