@@ -22,5 +22,6 @@ jobs:
       - run: npm ci
       - run: npm test
       - run: npm run build
-      - run: npm publish --provenance --access public
+      - run: npm config list
+      - run: npm publish --provenance --access public --verbose
         if: github.event_name == 'release'
